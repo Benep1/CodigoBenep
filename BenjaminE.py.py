@@ -7,7 +7,7 @@ Original file is located at
     https://colab.research.google.com/drive/1bYIlcusWr6fzTHAgxwjSDNdFcZPT62dM
 """
 
-# Solicitudes de HTTP.
+# Solicitudes de HTTP...
 import requests
 # Implementamos el formato JSON.
 import json
