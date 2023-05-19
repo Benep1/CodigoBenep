@@ -12,10 +12,20 @@ import requests
 # Implementamos el formato JSON.
 import json
 
-# Definimos la funcion de coordenadas geograficas, utilizando la API "MApquestapi".
+# Definimos la función de coordenadas geográficas, utilizando la API "MapQuest API".
 def obtener_coordenadas(ciudad):
+    """
+    Obtiene las coordenadas geográficas de una ciudad utilizando la API de MapQuest.
+    
+    Args:
+        ciudad (str): Nombre de la ciudad.
+    
+    Returns:
+        tuple: Coordenadas (latitud, longitud) de la ciudad.
+    """
     url = "http://www.mapquestapi.com/geocoding/v1/address"
     params = {
+        # Fijamos la clave unica de nuestra API.
         "key": "N4OqADCoTi0jZwJskM1jPJwbm8h3L5D7",
         "location": ciudad,
         "maxResults": 1,
@@ -27,8 +37,18 @@ def obtener_coordenadas(ciudad):
     lng = data["results"][0]["locations"][0]["latLng"]["lng"]
     return lat, lng
 
-# Se hace el calculo de la distancia utilizando la API.
+# Se hace el cálculo de la distancia utilizando la API.
 def calcular_distancia(origen, destino):
+    """
+    Calcula la distancia entre dos ciudades utilizando la API de MapQuest.
+    
+    Args:
+        origen (str): Ciudad de origen.
+        destino (str): Ciudad de destino.
+    
+    Returns:
+        float: Distancia en kilómetros.
+    """
     url = "http://www.mapquestapi.com/directions/v2/route"
     params = {
         "key": "N4OqADCoTi0jZwJskM1jPJwbm8h3L5D7",
@@ -43,6 +63,15 @@ def calcular_distancia(origen, destino):
 
 # Se calcula el tiempo en las unidades de medidas solicitadas.
 def convertir_tiempo(segundos):
+    """
+    Convierte una duración en segundos a horas, minutos y segundos.
+    
+    Args:
+        segundos (int): Duración en segundos.
+    
+    Returns:
+        tuple: Duración en horas, minutos y segundos.
+    """
     horas = segundos // 3600
     minutos = (segundos % 3600) // 60
     segundos = segundos % 60
@@ -51,12 +80,12 @@ def convertir_tiempo(segundos):
 # Solicitar las ciudades de origen y destino.
 # Inicia el bucle infinito.
 while True:
-  # Se solicita al usuario que ingrese una ciudad de origen. 
+    # Se solicita al usuario que ingrese una ciudad de origen.
     origen = input("Ciudad de origen (s para salir): ")
-    # Se añade la funcion de salida con la letra "S", asignada.
+    # Se añade la función de salida con la letra "S", asignada.
     if origen.lower() == "s":
         break
-# Ingreso de la ciudad de destino.
+    # Ingreso de la ciudad de destino.
     destino = input("Ciudad de destino: ")
     if destino.lower() == "s":
         break
@@ -71,23 +100,31 @@ while True:
 if origen.lower() != "s" and destino.lower() != "s":
     distancia = calcular_distancia(origen, destino)
 
-    # Calcular la duración del viaje asumiendo una velocidad promedio de 100 km/h.
-    duracion_segundos = distancia / 100 * 3600
+    # Calcular la duración del viaje asumiendo una velocidad promedio de 120 km/h. Ya que 120KM es el maximo de velocidad permitida. 
+    duracion_segundos = distancia / 120 * 3600
 
     # Convertir la duración a horas, minutos y segundos.
     horas, minutos, segundos = convertir_tiempo(duracion_segundos)
 
-    # Imprimir los resultados.
-    print("Distancia:", round(distancia, 1), "km")
-    print("Duración del viaje:", round(horas,), "horas,", round(minutos,), "minutos,", round(segundos,), "segundos")
+    # Señalamos los paso a pasos de la ruta.
+    print("Calculando la ruta asginada desde", origen, "hasta", destino)
+    print("...")
+    print("Esta es la ruta a seguir:")
+    print(" - Origen:", origen)
+    print(" - Destino:", destino)
+    print(" - Distancia:", round(distancia, 1), "km")
+    print(" - Duración estimada del viaje (Con una velocidad maxima a 120KM/H):", round(horas), "horas,", round(minutos), "minutos,", round(segundos), "segundos")
+    print("¡Buen viaje, Disfruta del Viaje!")
 
-    # Crear un diccionario con los resultados.
+    # Creamos un direccionamiento con la ruta.
     resultados = {
+        "Origen": origen,
+        "Destino": destino,
         "Distancia": round(distancia, 1),
-        "Duración del viaje": f"{round(horas,)} horas, {round(minutos,)} minutos, {round(segundos,)} segundos"
+        "Duración estimada del viaje (Con una velocidad maxima a 120KM/H)": f"{round(horas)} horas, {round(minutos)} minutos, {round(segundos)} segundos"
     }
 
     # Guardar los resultados en un archivo JSON.
     with open("resultados.json", "w") as file:
-      # Funcion DUMP, hace legible el codigo.
+      # Agregamos la funcion DUMP para mejorar la legibilidad.
         json.dump(resultados, file)
